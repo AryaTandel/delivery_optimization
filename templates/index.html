@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mumbai Delivery Optimizer</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app">
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside class="sidebar">
+
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">🚚</div>
+        <div>
+          <h1 class="logo-title">Route Optimizer</h1>
+          <span class="logo-sub">Mumbai Delivery</span>
+        </div>
+      </div>
+      <p class="tagline">Nearest-neighbor · OSRM routing · Live traffic</p>
+    </div>
+
+    <div class="sidebar-body">
+
+      <!-- START LOCATION -->
+      <section class="form-section">
+        <div class="section-label">Start Location</div>
+        <button class="btn btn-locate" onclick="setCurrentLocation()">📍 Use My Location</button>
+        <div class="input-wrap">
+          <span class="input-icon">🏠</span>
+          <input id="start" class="field" placeholder="Building / area in Mumbai…" autocomplete="off">
+          <div class="suggestions-box" id="start-sugg"></div>
+        </div>
+      </section>
+
+      <!-- DELIVERY STOPS -->
+      <section class="form-section">
+        <div class="section-label">Delivery Stops</div>
+        <div id="stops"></div>
+        <button class="btn btn-ghost" onclick="addStop()">➕ Add Stop</button>
+      </section>
+
+      <!-- OPTIONS -->
+      <section class="form-section">
+        <div class="section-label">Options</div>
+        <label class="toggle-row" id="trafficToggleRow">
+          <input type="checkbox" id="trafficToggle" onchange="onTrafficChange()">
+          <div class="toggle-track"></div>
+          <div>
+            <div class="toggle-text">🚦 Peak Hour Traffic</div>
+            <div class="toggle-sub">Colors route · adjusts time live</div>
+          </div>
+        </label>
+      </section>
+
+      <!-- ACTION -->
+      <button class="btn btn-primary" id="optimizeBtn" onclick="optimize()">
+        ⚡ Optimize Route
+      </button>
+
+      <!-- STATUS -->
+      <div class="status-bar" id="statusBar"></div>
+
+      <!-- METRICS -->
+      <section class="form-section">
+        <div class="section-label">Summary</div>
+        <div class="stats">
+          <div class="stat-card" id="distCard">
+            <div class="stat-icon">📏</div>
+            <div class="stat-label">Distance</div>
+            <div class="stat-value" id="dist">–</div>
+          </div>
+          <div class="stat-card" id="timeCard">
+            <div class="stat-icon">🕓</div>
+            <div class="stat-label">Base Time</div>
+            <div class="stat-value" id="baseTime">–</div>
+          </div>
+          <div class="stat-card stat-card-wide" id="adjCard">
+            <div class="stat-icon">🚦</div>
+            <div class="stat-label-row">
+              <span class="stat-label">Traffic-adj. Time</span>
+              <span class="delay-badge" id="delayBadge" style="display:none"></span>
+            </div>
+            <div class="stat-value accent-red" id="adjTime">–</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRAFFIC BREAKDOWN -->
+      <section class="form-section" id="trafficBreakdown" style="display:none">
+        <div class="section-label">Traffic Breakdown</div>
+        <div class="breakdown-bar">
+          <div class="bar-seg bar-green"  id="bar-green"  style="width:0%"></div>
+          <div class="bar-seg bar-orange" id="bar-orange" style="width:0%"></div>
+          <div class="bar-seg bar-red"    id="bar-red"    style="width:0%"></div>
+        </div>
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-dot green"></span>
+            <span class="legend-label">Low</span>
+            <span class="legend-pct" id="pct-green">0%</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot orange"></span>
+            <span class="legend-label">Medium</span>
+            <span class="legend-pct" id="pct-orange">0%</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot red"></span>
+            <span class="legend-label">Heavy</span>
+            <span class="legend-pct" id="pct-red">0%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ROUTE ORDER -->
+      <section class="form-section" id="routeOrderSection" style="display:none">
+        <div class="section-label">Optimized Route</div>
+        <div class="route-list" id="routeList"></div>
+      </section>
+
+    </div>
+  </aside>
+
+  <!-- ══════════ MAP ══════════ -->
+  <div id="map"></div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
